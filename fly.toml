@@ -6,6 +6,9 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+[deploy]
+  release_command = "/app/bin/migrate"
+
 [env]
   DATABASE_PATH = "/data/hexagon.db"
 

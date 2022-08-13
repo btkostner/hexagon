@@ -1,12 +1,15 @@
 import Config
 
+# Only in tests, remove the complexity from the password hashing algorithm
+config :bcrypt_elixir, :log_rounds, 1
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :hexagon, Hexagon.Repo,
-  database: Path.expand("../hexagon_test.db", Path.dirname(__ENV__.file)),
+  database: Path.expand("../priv/data/hexagon_test.db", Path.dirname(__ENV__.file)),
   pool_size: 5,
   pool: Ecto.Adapters.SQL.Sandbox
 

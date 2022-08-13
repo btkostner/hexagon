@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :hexagon, Hexagon.Repo,
-  database: Path.expand("../hexagon_dev.db", Path.dirname(__ENV__.file)),
+  database: Path.expand("../priv/data/hexagon_dev.db", Path.dirname(__ENV__.file)),
   pool_size: 5,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true
@@ -23,7 +23,8 @@ config :hexagon, HexagonWeb.Endpoint,
   secret_key_base: "qxQZKWxPEvVx4NxqGG+lrjukcmEHyfU0S/jpfJ2iTqtRYL4CN4YTRNy131sgdZDa",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support

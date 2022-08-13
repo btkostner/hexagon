@@ -1,30 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="csrf-token" content={csrf_token_value()}>
-    <%= live_title_tag assigns[:page_title] || "Hexagon", suffix: " · Phoenix Framework" %>
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
-    <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content={csrf_token_value()} />
+    <%= live_title_tag(assigns[:page_title] || "Packages", suffix: " · Hexagon") %>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
+    <script
+      defer
+      phx-track-static
+      type="text/javascript"
+      src={Routes.static_path(@conn, "/assets/app.js")}
+    >
+    </script>
   </head>
-  <body>
+  <body class="relative min-h-screen flex flex-col">
     <header>
-      <section class="container">
-        <nav>
-          <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+      <nav
+        class="flex-shrink-0 bg-gray-900"
+        x-data="{
+          open: false,
+          toggle() {
+              if (this.open) {
+                  return this.close()
+              }
+              this.$refs.button.focus()
+              this.open = true
+          },
+          close(focusAfter) {
+              if (!this.open) return
+              this.open = false
+              focusAfter && focusAfter.focus()
+          }
+      }"
+        x-on:keydown.escape.prevent.stop="close($refs.button)"
+        x-on:focusin.window="! $refs.panel.contains($event.target) && close()"
+        x-id="['navigation']"
+      >
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div class="relative flex items-center justify-between h-16">
+            <div class="flex items-center px-2 lg:px-0 xl:w-64">
+              <a href="/" class="flex-shrink-0" aria-labelledby="homepage-label">
+                <h2 id="homepage-label" class="sr-only">Homepage</h2>
+                <img
+                  class="h-8 w-auto"
+                  src="https://tailwindui.com/img/logos/workflow-mark.svg?from-color=teal&from-shade=200&to-color=cyan&to-shade=400&toShade=400"
+                  alt="Workflow"
+                />
+              </a>
+            </div>
+
+            <%= if @current_user do %>
+              <div class="flex-1 flex justify-center lg:justify-end">
+                <div class="w-full px-2 lg:px-6">
+                  <label for="search" class="sr-only">Search packages</label>
+                  <div class="relative text-gray-200 focus-within:text-gray-400">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg
+                        class="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      id="search"
+                      name="search"
+                      class="block w-full pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-gray-400 bg-opacity-25 text-gray-100 placeholder-gray-200 focus:outline-none focus:bg-white focus:ring-0 focus:placeholder-gray-400 focus:text-gray-900 sm:text-sm"
+                      placeholder="Search projects"
+                      type="search"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex lg:hidden">
+                <button
+                  type="button"
+                  class="bg-gray-600 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-600 focus:ring-white"
+                  aria-controls="mobile-menu"
+                  aria-haspopup="true"
+                  x-ref="button"
+                  x-on:click="toggle()"
+                  :aria-expanded="open"
+                  :aria-controls="$id('navigation')"
+                  id="mobile-menu-button"
+                >
+                  <span class="sr-only">Open main menu</span>
+                  <svg
+                    class="block h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    x-show="!open"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4 6h16M4 12h8m-8 6h16"
+                    />
+                  </svg>
+                  <svg
+                    class="block h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                    x-show="open"
+                    x-cloak
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="hidden lg:block lg:w-80">
+                <div class="flex items-center justify-end">
+                  <div class="flex">
+                    <a
+                      href="#"
+                      class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white"
+                      aria-current="page"
+                    >
+                      Dashboard
+                    </a>
+                  </div>
+
+                  <div
+                    class="ml-4 relative flex-shrink-0"
+                    x-data="{
+                      open: false,
+                      toggle() {
+                          if (this.open) {
+                              return this.close()
+                          }
+                          this.$refs.button.focus()
+                          this.open = true
+                      },
+                      close(focusAfter) {
+                          if (!this.open) return
+                          this.open = false
+                          focusAfter && focusAfter.focus()
+                      }
+                  }"
+                    x-on:keydown.escape.prevent.stop="close($refs.button)"
+                    x-on:focusin.window="! $refs.panel.contains($event.target) && close()"
+                    x-id="['user-menu-button']"
+                    class="relative"
+                  >
+                    <div>
+                      <button
+                        type="button"
+                        class="bg-gray-700 flex text-sm rounded-full text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-white"
+                        id="user-menu-button"
+                        aria-haspopup="true"
+                        x-ref="button"
+                        x-on:click="toggle()"
+                        :aria-expanded="open"
+                        :aria-controls="$id('user-menu-button')"
+                      >
+                        <span class="sr-only">Open user menu</span>
+                        <img
+                          class="h-8 w-8 rounded-full"
+                          src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=256&h=256&q=80"
+                          alt=""
+                        />
+                      </button>
+                    </div>
+
+                    <div
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby="user-menu-button"
+                      x-transition:enter="transition ease-out duration-100"
+                      x-transition:enter-start="transform opacity-0 scale-95"
+                      x-transition:enter-end="transform opacity-100 scale-100"
+                      x-transition:leave="transition ease-in duration-75"
+                      x-transition:leave-start="transform opacity-100 scale-100"
+                      x-transition:leave-end="transform opacity-0 scale-95"
+                      tabindex="-1"
+                      x-ref="panel"
+                      x-show="open"
+                      x-on:click.outside="close($refs.button)"
+                      :id="$id('user-menu-button')"
+                      x-cloak
+                      class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                    >
+                      <%= link("Settings",
+                        class: "block px-4 py-2 text-sm text-gray-700",
+                        role: "menuitem",
+                        tabindex: "-1",
+                        to: Routes.user_settings_path(@conn, :edit)
+                      ) %>
+
+                      <%= link("Live Dashboard",
+                        class: "block px-4 py-2 text-sm text-gray-700",
+                        to: Routes.live_dashboard_path(@conn, :home)
+                      ) %>
+
+                      <%= link("Log Out",
+                        class: "block px-4 py-2 text-sm text-gray-700",
+                        method: :delete,
+                        role: "menuitem",
+                        tabindex: "-1",
+                        to: Routes.user_session_path(@conn, :delete)
+                      ) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% else %>
+              <div class="flex-1 flex justify-end items-center space-x-6">
+                <%= link("Register",
+                  class: "text-base font-medium text-white hover:text-gray-300",
+                  to: Routes.user_registration_path(@conn, :new)
+                ) %>
+                <%= link("Sign In",
+                  class:
+                    "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700",
+                  to: Routes.user_session_path(@conn, :new)
+                ) %>
+              </div>
             <% end %>
-          </ul>
-        </nav>
-        <a href="https://phoenixframework.org/" class="phx-logo">
-          <img src={Routes.static_path(@conn, "/images/phoenix.png")} alt="Phoenix Framework Logo"/>
-        </a>
-      </section>
+          </div>
+        </div>
+
+        <%= if @current_user do %>
+          <div
+            role="menu"
+            aria-orientation="vertical"
+            aria-labelledby="mobile-menu-button"
+            tabindex="-1"
+            x-ref="panel"
+            x-show="open"
+            x-on:click.outside="close($refs.button)"
+            :id="$id('navigation')"
+            x-cloak
+            class="lg:hidden"
+            id="mobile-menu"
+          >
+            <div class="px-2 pt-2 pb-3 space-y-1">
+              <a
+                href="#"
+                class="text-white bg-gray-800 block px-3 py-2 rounded-md text-base font-medium"
+                aria-current="page"
+              >
+                Dashboard
+              </a>
+            </div>
+
+            <div class="pt-4 pb-3 border-t border-gray-800">
+              <div class="px-2 space-y-1">
+                <%= link("Settings",
+                  class:
+                    "block px-3 py-2 rounded-md text-base font-medium text-gray-200 hover:text-gray-100 hover:bg-gray-600",
+                  to: Routes.user_settings_path(@conn, :edit)
+                ) %>
+
+                <%= link("Live Dashboard",
+                  class:
+                    "block px-3 py-2 rounded-md text-base font-medium text-gray-200 hover:text-gray-100 hover:bg-gray-600",
+                  to: Routes.live_dashboard_path(@conn, :home)
+                ) %>
+
+                <%= link("Log Out",
+                  class:
+                    "block px-3 py-2 rounded-md text-base font-medium text-gray-200 hover:text-gray-100 hover:bg-gray-600",
+                  method: :delete,
+                  role: "menuitem",
+                  tabindex: "-1",
+                  to: Routes.user_session_path(@conn, :delete)
+                ) %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </nav>
     </header>
+
     <%= @inner_content %>
+    <!--
+      Footers here are unprofessional, but I'd like to thank all of the
+      contributors that made this happen, my friends for not leaving me
+      alone, and Elixir. The best dang programming language ever.
+    -->
   </body>
 </html>
