@@ -20,7 +20,9 @@ This _is not_ a SaaS framework or something you would want multiple entities to 
   - [ ] Teams
   - [ ] Tokens not restricted to user (by team?)
 - [ ] Elixir packages
+  - [ ] Namespaces (hex organization like)?
 - [ ] NPM packages?
+  - [ ] Namespaces (npm org scope like)?
 - [ ] Postgres database support (optional vs sqlite)
 - [ ] GCP bucket storage
 

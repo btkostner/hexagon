@@ -41,7 +41,7 @@ defmodule HexagonWeb.Router do
     scope "/" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: HexagonWeb.Telemetry
+      live_dashboard "/server", metrics: HexagonWeb.Telemetry
     end
   end
 

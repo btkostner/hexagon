@@ -8,6 +8,10 @@ defmodule Hexagon.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      # Start default Finch HTTP pool
+      {Finch, name: Hexagon.FinchPool, pools: %{:default => [size: 32]}},
+      # Start the local store. A no-op if not configured
+      Hexagon.Extensions.Plug.LocalStore,
       # Start the Ecto repository
       Hexagon.Repo,
       # Start the Telemetry supervisor

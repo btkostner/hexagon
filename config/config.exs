@@ -17,6 +17,15 @@ config :hexagon, HexagonWeb.Endpoint,
   pubsub_server: Hexagon.PubSub,
   live_view: [signing_salt: "mJSHeBOR"]
 
+# Configure the internal package store
+#
+# By default it uses the "priv/data/packages" folder
+# and starts a local web server for it.
+config :hexagon, :packages_store,
+  module: Hexagon.Packages.Store.Local,
+  directory: Path.expand("../priv/data/packages", __DIR__),
+  port: 4002
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
