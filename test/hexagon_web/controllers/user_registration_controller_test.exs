@@ -1,7 +1,7 @@
 defmodule HexagonWeb.UserRegistrationControllerTest do
   use HexagonWeb.ConnCase
 
-  import Hexagon.AccountsFixtures
+  import Hexagon.AccountsFactory
 
   describe "GET /users/register" do
     test "renders registration page", %{conn: conn} do
@@ -13,7 +13,7 @@ defmodule HexagonWeb.UserRegistrationControllerTest do
     end
 
     test "redirects if already logged in", %{conn: conn} do
-      conn = conn |> log_in_user(user_fixture()) |> get(Routes.user_registration_path(conn, :new))
+      conn = conn |> log_in_user(insert(:user)) |> get(Routes.user_registration_path(conn, :new))
       assert redirected_to(conn) == "/"
     end
   end
@@ -21,11 +21,11 @@ defmodule HexagonWeb.UserRegistrationControllerTest do
   describe "POST /users/register" do
     @tag :capture_log
     test "creates account and logs the user in", %{conn: conn} do
-      email = unique_user_email()
+      email = build(:email)
 
       conn =
         post(conn, Routes.user_registration_path(conn, :create), %{
-          "user" => valid_user_attributes(email: email)
+          "user" => build(:user, email: email)
         })
 
       assert get_session(conn, :user_token)

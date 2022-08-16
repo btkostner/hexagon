@@ -24,6 +24,19 @@ defmodule Hexagon.Packages do
   end
 
   @doc """
+  Returns a package by the given id.
+
+  ## Examples
+
+      iex> get_package!(id)
+      %Package{}
+
+  """
+  def get_package!(id) do
+    Repo.get!(Package, id)
+  end
+
+  @doc """
   Gets a single package release.
 
   ## Examples

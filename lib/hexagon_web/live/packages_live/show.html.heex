@@ -1,0 +1,98 @@
+<main class="flex-1">
+  <div class="py-8 xl:py-10">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 xl:max-w-5xl">
+      <div>
+        <div>
+          <div>
+            <div class="md:flex md:items-center md:justify-between md:space-x-4 xl:border-b xl:pb-6">
+              <div>
+                <h1 class="text-2xl font-bold text-gray-900"><%= @package.name %></h1>
+                <p class="mt-2 text-sm text-gray-500">
+                  <span>Elixir</span>
+                  <span aria-hidden="true">&middot;</span>
+                  <span>Last deploy 3h ago</span>
+                </p>
+              </div>
+              <div class="mt-4 flex space-x-3 md:mt-0">
+                <%= live_redirect("Edit",
+                  to: Routes.packages_edit_path(@socket, :edit, @package),
+                  class:
+                    "inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                ) %>
+
+                <%= if not is_nil(@package.external_doc_url) do %>
+                  <a
+                    href={@package.external_doc_url}
+                    class="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                  >
+                    View Documentation
+                  </a>
+                <% end %>
+              </div>
+            </div>
+            <div class="py-3 xl:pt-6 xl:pb-0">
+              <h2 class="sr-only">Description</h2>
+              <div class="prose max-w-none">
+                <p><%= @package.description %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section aria-labelledby="activity-title" class="mt-8 xl:mt-10">
+          <div>
+            <div class="divide-y divide-gray-200">
+              <div class="pb-4">
+                <h2 id="activity-title" class="text-lg font-medium text-gray-900">Activity</h2>
+              </div>
+              <div class="pt-6">
+                <div class="flow-root">
+                  <ul role="list" class="-mb-8">
+                    <li>
+                      <div class="relative pb-8">
+                        <span
+                          class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200"
+                          aria-hidden="true"
+                        >
+                        </span>
+                        <div class="relative flex items-start space-x-3">
+                          <div>
+                            <div class="relative px-1">
+                              <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
+                                <!-- Heroicon name: solid/tag -->
+                                <svg
+                                  class="h-5 w-5 text-gray-500"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="min-w-0 flex-1 py-0">
+                            <div class="text-sm leading-8 text-gray-500">
+                              <span class="mr-0.5">
+                                <span class="font-medium text-gray-900">0.0.1</span> released
+                              </span>
+                              <span class="whitespace-nowrap">6h ago</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

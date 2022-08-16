@@ -1,8 +1,9 @@
 defmodule HexagonWeb.UserSettingsControllerTest do
   use HexagonWeb.ConnCase
 
+  import Hexagon.AccountsFactory
+
   alias Hexagon.Accounts
-  import Hexagon.AccountsFixtures
 
   setup :register_and_log_in_user
 
@@ -25,7 +26,7 @@ defmodule HexagonWeb.UserSettingsControllerTest do
       new_password_conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
           "action" => "update_password",
-          "current_password" => valid_user_password(),
+          "current_password" => user.password,
           "user" => %{
             "password" => "new valid password",
             "password_confirmation" => "new valid password"
@@ -65,8 +66,8 @@ defmodule HexagonWeb.UserSettingsControllerTest do
       conn =
         put(conn, Routes.user_settings_path(conn, :update), %{
           "action" => "update_email",
-          "current_password" => valid_user_password(),
-          "user" => %{"email" => unique_user_email()}
+          "current_password" => user.password,
+          "user" => %{"email" => build(:email)}
         })
 
       assert redirected_to(conn) == Routes.user_settings_path(conn, :edit)
@@ -91,7 +92,7 @@ defmodule HexagonWeb.UserSettingsControllerTest do
 
   describe "GET /users/settings/confirm_email/:token" do
     setup %{user: user} do
-      email = unique_user_email()
+      email = build(:email)
 
       token =
         extract_user_token(fn url ->

@@ -16,7 +16,7 @@
     </script>
   </head>
   <body class="relative min-h-screen flex flex-col">
-    <header>
+    <header class="z-20">
       <nav
         class="flex-shrink-0 bg-gray-900"
         x-data="{
@@ -131,11 +131,11 @@
                 <div class="flex items-center justify-end">
                   <div class="flex">
                     <a
-                      href="#"
+                      href={Routes.packages_index_path(@conn, :index)}
                       class="px-3 py-2 rounded-md text-sm font-medium text-gray-200 hover:text-white"
                       aria-current="page"
                     >
-                      Dashboard
+                      Packages
                     </a>
                   </div>
 
@@ -256,11 +256,11 @@
           >
             <div class="px-2 pt-2 pb-3 space-y-1">
               <a
-                href="#"
+                href={Routes.packages_index_path(@conn, :index)}
                 class="text-white bg-gray-800 block px-3 py-2 rounded-md text-base font-medium"
                 aria-current="page"
               >
-                Dashboard
+                Packages
               </a>
             </div>
 

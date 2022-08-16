@@ -10,11 +10,11 @@ defmodule Hexagon.Packages.Store.Local do
 
   @impl true
   def get(path) do
-    uri = %URI{
+    URI.to_string(%URI{
       host: LocalStore.host(),
       port: LocalStore.port(),
       path: path
-    }
+    })
   end
 
   @impl true

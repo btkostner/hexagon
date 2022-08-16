@@ -57,6 +57,16 @@ defmodule HexagonWeb.Router do
     end
   end
 
+  ## Project routes
+  scope "/", HexagonWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/packages", PackagesLive.Index, :index
+    live "/packages/new", PackagesLive.Edit, :new
+    live "/packages/:id", PackagesLive.Show, :show
+    live "/packages/:id/edit", PackagesLive.Edit, :edit
+  end
+
   ## Authentication routes
 
   scope "/", HexagonWeb do

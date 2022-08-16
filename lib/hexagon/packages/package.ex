@@ -3,7 +3,7 @@ defmodule Hexagon.Packages.Package do
 
   import Ecto.Changeset
 
-  @types ~w(hex)
+  @types ~w(hex)a
 
   schema "packages" do
     field :name, :string
@@ -19,7 +19,7 @@ defmodule Hexagon.Packages.Package do
   def changeset(package, attrs) do
     package
     |> cast(attrs, [:name, :type, :description])
-    |> validate_required([:name, :type, :description])
+    |> validate_required([:name, :type])
     |> validate_inclusion(:type, @types)
     |> validate_length(:name, min: 2)
     |> validate_format(:name, ~r"^[a-z]\w*$")
@@ -29,7 +29,6 @@ defmodule Hexagon.Packages.Package do
   def update_changeset(package, attrs) do
     package
     |> cast(attrs, [:description, :external_doc_url])
-    |> validate_required([:description])
     |> Hexagon.Extensions.Ecto.Validations.normalize_and_validate_url(:external_doc_url)
   end
 end

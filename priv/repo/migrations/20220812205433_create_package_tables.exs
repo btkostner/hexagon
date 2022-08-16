@@ -5,7 +5,7 @@ defmodule Hexagon.Repo.Migrations.CreatePackageTables do
     create table(:packages) do
       add :name, :string, null: false
       add :type, :string, null: false
-      add :description, :string, null: false
+      add :description, :string
       add :external_doc_url, :string
       timestamps()
     end

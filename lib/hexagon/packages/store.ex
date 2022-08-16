@@ -9,7 +9,7 @@ defmodule Hexagon.Packages.Store do
   Returns full authenticated URI for a package. This will be sent to the
   end user package manager.
   """
-  @callback get(Path.t()) :: {:ok, URI.t()} | {:error, any()}
+  @callback get(Path.t()) :: {:ok, String.t()} | {:error, any()}
 
   @doc """
   Saves a file in the package store.
@@ -22,10 +22,10 @@ defmodule Hexagon.Packages.Store do
   @callback delete(Path.t()) :: :ok | {:error, any()}
 
   @doc """
-  Returns a fully URI to download a package. This can be a normal URI, or in
+  Returns a fully URL to download a package. This can be a normal URL, or in
   most cases, will be an authenticated URL behind some S3 like bucket.
   """
-  @spec get(Path.t() :: {:ok, URI.t()} | {:error, any()}
+  @spec get(Path.t()) :: {:ok, String.t()} | {:error, any()}
   def get(path), do: api().get(path)
 
   @doc """
@@ -41,5 +41,6 @@ defmodule Hexagon.Packages.Store do
   @spec delete(Path.t()) :: :ok | {:error, any()}
   def delete(path), do: api().delete(path)
 
-  defp api(), do: Application.fetch_env!(:hexagon, :packages_store)[:module]
+  defp api(), do: Keyword.get(config(), :module)
+  defp config(), do: Application.get_env(:hexagon, :packages_store)
 end
