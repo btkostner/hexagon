@@ -10,7 +10,10 @@ defmodule HexagonWeb.PackagesLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    package = Packages.get_package!(id)
+    package =
+      id
+      |> Packages.get_package!()
+      |> Packages.load_releases()
 
     {:noreply,
      socket

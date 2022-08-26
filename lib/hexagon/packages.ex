@@ -16,10 +16,37 @@ defmodule Hexagon.Packages do
       iex> list_packages()
       [%Package{}, ...]
 
+      iex> list_packages(order_by: :inserted_at)
+      [%Package{}, ...]
+
   """
-  def list_packages do
+  def list_packages(opts \\ []) do
+    order_by =
+      case Keyword.get(opts, :order_by, :name) do
+        :name -> [asc: :name]
+        :inserted_at -> [desc: :inserted_at]
+      end
+
     Package
-    |> order_by(asc: :name)
+    |> order_by(^order_by)
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns a list of filtered packages via a search query. This is yet to be
+  optimized or improved, so right now it's pretty dumb.
+
+  ## Examples
+
+      iex> search_packages("test")
+      [%Package{}]
+
+  """
+  def search_packages(query) do
+    escaped_query = Regex.replace(~r/([\%_])/, query, "\\1")
+
+    Package
+    |> where([p], like(p.name, ^"%#{escaped_query}%"))
     |> Repo.all()
   end
 

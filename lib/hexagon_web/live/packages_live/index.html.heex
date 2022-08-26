@@ -74,24 +74,34 @@
             tabindex="-1"
           >
             <div class="py-1" role="none">
-              <a
-                href="#"
-                class="bg-gray-100 text-gray-900 block px-4 py-2 text-sm"
+              <button
+                class={
+                  if @sort == :name,
+                    do: "bg-gray-100 text-gray-900 block px-4 py-2 text-sm text-left w-full",
+                    else: "text-gray-700 block px-4 py-2 text-sm text-left w-full"
+                }
                 role="menuitem"
+                phx-click="sort"
+                value="name"
                 tabindex="-1"
                 id="sort-menu-item-0"
               >
                 Name
-              </a>
-              <a
-                href="#"
-                class="text-gray-700 block px-4 py-2 text-sm"
+              </button>
+              <button
+                class={
+                  if @sort == :inserted_at,
+                    do: "bg-gray-100 text-gray-900 block px-4 py-2 text-sm text-left w-full",
+                    else: "text-gray-700 block px-4 py-2 text-sm text-left w-full"
+                }
                 role="menuitem"
                 tabindex="-1"
+                phx-click="sort"
+                value="date_created"
                 id="sort-menu-item-2"
               >
                 Date created
-              </a>
+              </button>
             </div>
           </div>
         </div>

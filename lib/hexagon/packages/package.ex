@@ -21,11 +21,19 @@ defmodule Hexagon.Packages.Package do
     |> cast(attrs, [:name, :type, :description])
     |> validate_required([:name, :type])
     |> validate_inclusion(:type, @types)
-    |> validate_length(:name, min: 2)
-    |> validate_format(:name, ~r"^[a-z]\w*$")
+    |> validate_length(:name, min: 2, max: 200)
+    |> validate_format(:name, ~r/^[a-z]\w*$/)
     |> unique_constraint([:name, :type])
   end
 
+  @spec update_changeset(
+          {map, map}
+          | %{
+              :__struct__ => atom | %{:__changeset__ => map, optional(any) => any},
+              optional(atom) => any
+            },
+          :invalid | %{optional(:__struct__) => none, optional(atom | binary) => any}
+        ) :: Ecto.Changeset.t()
   def update_changeset(package, attrs) do
     package
     |> cast(attrs, [:description, :external_doc_url])
