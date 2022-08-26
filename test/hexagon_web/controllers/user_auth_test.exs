@@ -1,9 +1,10 @@
 defmodule HexagonWeb.UserAuthTest do
   use HexagonWeb.ConnCase
 
+  import Hexagon.AccountsFactory
+
   alias Hexagon.Accounts
   alias HexagonWeb.UserAuth
-  import Hexagon.AccountsFixtures
 
   @remember_me_cookie "_hexagon_web_user_remember_me"
 
@@ -13,7 +14,7 @@ defmodule HexagonWeb.UserAuthTest do
       |> Map.replace!(:secret_key_base, HexagonWeb.Endpoint.config(:secret_key_base))
       |> init_test_session(%{})
 
-    %{user: user_fixture(), conn: conn}
+    %{user: insert(:user), conn: conn}
   end
 
   describe "log_in_user/3" do

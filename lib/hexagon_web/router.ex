@@ -41,7 +41,7 @@ defmodule HexagonWeb.Router do
     scope "/" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: HexagonWeb.Telemetry
+      live_dashboard "/server", metrics: HexagonWeb.Telemetry
     end
   end
 
@@ -55,6 +55,16 @@ defmodule HexagonWeb.Router do
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  ## Project routes
+  scope "/", HexagonWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live "/packages", PackagesLive.Index, :index
+    live "/packages/new", PackagesLive.Edit, :new
+    live "/packages/:id", PackagesLive.Show, :show
+    live "/packages/:id/edit", PackagesLive.Edit, :edit
   end
 
   ## Authentication routes

@@ -1,0 +1,91 @@
+<main class="max-w-lg mx-auto pt-10 pb-12 px-4 lg:pb-16">
+  <.form let={f} for={@changeset} id="package-form" phx-change="validate" phx-submit="save">
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-lg leading-6 font-medium text-gray-900">Package Settings</h1>
+        <p class="mt-1 text-sm text-gray-500">
+          Let’s get started by filling in the information below to create your new package.
+        </p>
+      </div>
+
+      <div>
+        <%= label(f, :name, class: "block text-sm font-medium text-gray-700") %>
+        <div class="mt-1">
+          <%= text_input(f, :name,
+            class:
+              "block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border-gray-300 rounded-md",
+            readonly: @live_action == :edit
+          ) %>
+          <%= error_tag(f, :name) %>
+        </div>
+      </div>
+
+      <div>
+        <%= label(f, :description, class: "block text-sm font-medium text-gray-700") %>
+        <div class="mt-1">
+          <%= textarea(f, :description,
+            class:
+              "block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border border-gray-300 rounded-md"
+          ) %>
+          <%= error_tag(f, :description) %>
+        </div>
+      </div>
+
+      <div>
+        <%= label(f, :external_doc_url, "Documentation URL",
+          class: "block text-sm font-medium text-gray-700"
+        ) %>
+        <div class="mt-1">
+          <%= url_input(f, :external_doc_url,
+            class:
+              "block w-full shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm border border-gray-300 rounded-md"
+          ) %>
+          <%= error_tag(f, :external_doc_url) %>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend class="text-sm font-medium text-gray-900">Package Manager</legend>
+
+        <div class="mt-1 bg-white rounded-md shadow-sm -space-y-px">
+          <!-- Checked: "bg-sky-50 border-sky-200 z-10", Not Checked: "border-gray-200" -->
+          <label class="rounded-md relative border p-4 flex cursor-pointer focus:outline-none">
+            <%= radio_button(f, :type, :hex,
+              class:
+                "h-4 w-4 mt-0.5 cursor-pointer shrink-0 text-sky-600 border-gray-300 bg-sky-50 border-sky-200 z-10 focus:ring-sky-500",
+              "aria-labelledby": "privacy-setting-0-label",
+              "aria-describedby": "privacy-setting-0-description",
+              checked: true,
+              disabled: @live_action == :edit
+            ) %>
+            <span class="ml-3 flex flex-col">
+              <!-- Checked: "text-sky-900", Not Checked: "text-gray-900" -->
+              <span id="privacy-setting-0-label" class="block text-sm font-medium">Hex</span>
+              <!-- Checked: "text-sky-700", Not Checked: "text-gray-500" -->
+              <span id="privacy-setting-0-description" class="block text-sm">
+                For Elixir and Erlang packages
+              </span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="flex justify-end">
+        <%= if @live_action == :edit do
+          link("Delete",
+            to: "#",
+            phx_click: "delete",
+            phx_value_id: @package.id,
+            data: [confirm: "Are you sure?"]
+          )
+        end %>
+
+        <%= submit("Save",
+          phx_disable_with: "Saving...",
+          class:
+            "ml-3 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+        ) %>
+      </div>
+    </div>
+  </.form>
+</main>

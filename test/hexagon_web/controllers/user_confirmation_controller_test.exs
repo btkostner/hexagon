@@ -1,12 +1,13 @@
 defmodule HexagonWeb.UserConfirmationControllerTest do
   use HexagonWeb.ConnCase
 
+  import Hexagon.AccountsFactory
+
   alias Hexagon.Accounts
   alias Hexagon.Repo
-  import Hexagon.AccountsFixtures
 
   setup do
-    %{user: user_fixture()}
+    %{user: insert(:user)}
   end
 
   describe "GET /users/confirm" do

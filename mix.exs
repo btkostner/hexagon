@@ -36,6 +36,7 @@ defmodule Hexagon.MixProject do
       {:ecto_sql, "~> 3.6"},
       {:ecto_sqlite3, ">= 0.0.0"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
+      {:ex_machina, "~> 2.7.0", only: [:dev, :test]},
       {:finch, "~> 0.13.0"},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.18"},

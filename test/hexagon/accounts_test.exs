@@ -1,9 +1,9 @@
 defmodule Hexagon.AccountsTest do
   use Hexagon.DataCase
 
-  alias Hexagon.Accounts
+  import Hexagon.AccountsFactory
 
-  import Hexagon.AccountsFixtures
+  alias Hexagon.Accounts
   alias Hexagon.Accounts.{User, UserToken}
 
   describe "get_user_by_email/1" do
@@ -12,7 +12,7 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "returns the user if the email exists" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
       assert %User{id: ^id} = Accounts.get_user_by_email(user.email)
     end
   end
@@ -23,15 +23,14 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "does not return the user if the password is not valid" do
-      user = user_fixture()
+      user = insert(:user)
       refute Accounts.get_user_by_email_and_password(user.email, "invalid")
     end
 
     test "returns the user if the email and password are valid" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
 
-      assert %User{id: ^id} =
-               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+      assert %User{id: ^id} = Accounts.get_user_by_email_and_password(user.email, user.password)
     end
   end
 
@@ -43,7 +42,7 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "returns the user with the given id" do
-      %{id: id} = user = user_fixture()
+      %{id: id} = user = insert(:user)
       assert %User{id: ^id} = Accounts.get_user!(user.id)
     end
   end
@@ -75,7 +74,7 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "validates email uniqueness" do
-      %{email: email} = user_fixture()
+      %{email: email} = insert(:user)
       {:error, changeset} = Accounts.register_user(%{email: email})
       assert "has already been taken" in errors_on(changeset).email
 
@@ -85,8 +84,8 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "registers users with a hashed password" do
-      email = unique_user_email()
-      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
+      email = build(:email)
+      {:ok, user} = Accounts.register_user(params_for(:user, email: email))
       assert user.email == email
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
@@ -101,13 +100,13 @@ defmodule Hexagon.AccountsTest do
     end
 
     test "allows fields to be set" do
-      email = unique_user_email()
-      password = valid_user_password()
+      email = build(:email)
+      password = build(:password)
 
       changeset =
         Accounts.change_user_registration(
           %User{},
-          valid_user_attributes(email: email, password: password)
+          params_for(:user, email: email, password: password)
         )
 
       assert changeset.valid?
@@ -126,17 +125,16 @@ defmodule Hexagon.AccountsTest do
 
   describe "apply_user_email/3" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "requires email to change", %{user: user} do
-      {:error, changeset} = Accounts.apply_user_email(user, valid_user_password(), %{})
+      {:error, changeset} = Accounts.apply_user_email(user, user.email, %{})
       assert %{email: ["did not change"]} = errors_on(changeset)
     end
 
     test "validates email", %{user: user} do
-      {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: "not valid"})
+      {:error, changeset} = Accounts.apply_user_email(user, user.password, %{email: "not valid"})
 
       assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
     end
@@ -144,31 +142,28 @@ defmodule Hexagon.AccountsTest do
     test "validates maximum value for email for security", %{user: user} do
       too_long = String.duplicate("db", 100)
 
-      {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: too_long})
+      {:error, changeset} = Accounts.apply_user_email(user, user.password, %{email: too_long})
 
       assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
 
     test "validates email uniqueness", %{user: user} do
-      %{email: email} = user_fixture()
+      %{email: email} = insert(:user)
 
-      {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: email})
+      {:error, changeset} = Accounts.apply_user_email(user, user.password, %{email: email})
 
       assert "has already been taken" in errors_on(changeset).email
     end
 
     test "validates current password", %{user: user} do
-      {:error, changeset} =
-        Accounts.apply_user_email(user, "invalid", %{email: unique_user_email()})
+      {:error, changeset} = Accounts.apply_user_email(user, "invalid", %{email: build(:email)})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
     test "applies the email without persisting it", %{user: user} do
-      email = unique_user_email()
-      {:ok, user} = Accounts.apply_user_email(user, valid_user_password(), %{email: email})
+      email = build(:email)
+      {:ok, user} = Accounts.apply_user_email(user, user.password, %{email: email})
       assert user.email == email
       assert Accounts.get_user!(user.id).email != email
     end
@@ -176,7 +171,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "deliver_update_email_instructions/3" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -195,8 +190,8 @@ defmodule Hexagon.AccountsTest do
 
   describe "update_user_email/2" do
     setup do
-      user = user_fixture()
-      email = unique_user_email()
+      user = insert(:user)
+      email = build(:email)
 
       token =
         extract_user_token(fn url ->
@@ -256,12 +251,12 @@ defmodule Hexagon.AccountsTest do
 
   describe "update_user_password/3" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "validates password", %{user: user} do
       {:error, changeset} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, user.password, %{
           password: "not valid",
           password_confirmation: "another"
         })
@@ -276,21 +271,21 @@ defmodule Hexagon.AccountsTest do
       too_long = String.duplicate("db", 100)
 
       {:error, changeset} =
-        Accounts.update_user_password(user, valid_user_password(), %{password: too_long})
+        Accounts.update_user_password(user, user.password, %{password: too_long})
 
       assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "validates current password", %{user: user} do
       {:error, changeset} =
-        Accounts.update_user_password(user, "invalid", %{password: valid_user_password()})
+        Accounts.update_user_password(user, "invalid", %{password: build(:password)})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
     test "updates the password", %{user: user} do
       {:ok, user} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, user.password, %{
           password: "new valid password"
         })
 
@@ -302,7 +297,7 @@ defmodule Hexagon.AccountsTest do
       _ = Accounts.generate_user_session_token(user)
 
       {:ok, _} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, user.password, %{
           password: "new valid password"
         })
 
@@ -312,7 +307,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "generate_user_session_token/1" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "generates a token", %{user: user} do
@@ -324,7 +319,7 @@ defmodule Hexagon.AccountsTest do
       assert_raise Ecto.ConstraintError, fn ->
         Repo.insert!(%UserToken{
           token: user_token.token,
-          user_id: user_fixture().id,
+          user_id: insert(:user).id,
           context: "session"
         })
       end
@@ -333,7 +328,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "get_user_by_session_token/1" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
       token = Accounts.generate_user_session_token(user)
       %{user: user, token: token}
     end
@@ -355,7 +350,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "delete_session_token/1" do
     test "deletes the token" do
-      user = user_fixture()
+      user = insert(:user)
       token = Accounts.generate_user_session_token(user)
       assert Accounts.delete_session_token(token) == :ok
       refute Accounts.get_user_by_session_token(token)
@@ -364,7 +359,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "deliver_user_confirmation_instructions/2" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -383,7 +378,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "confirm_user/1" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
 
       token =
         extract_user_token(fn url ->
@@ -417,7 +412,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "deliver_user_reset_password_instructions/2" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "sends token through notification", %{user: user} do
@@ -436,7 +431,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "get_user_by_reset_password_token/1" do
     setup do
-      user = user_fixture()
+      user = insert(:user)
 
       token =
         extract_user_token(fn url ->
@@ -465,7 +460,7 @@ defmodule Hexagon.AccountsTest do
 
   describe "reset_user_password/2" do
     setup do
-      %{user: user_fixture()}
+      %{user: insert(:user)}
     end
 
     test "validates password", %{user: user} do

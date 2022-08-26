@@ -14,6 +14,22 @@ A simple to get running hex repository designed for a single organization or ent
 
 This _is not_ a SaaS framework or something you would want multiple entities to have access to.
 
+## Todo
+
+- [X] Basic authentication (`mix phx.gen.auth`)
+  - [ ] Teams
+  - [ ] Tokens not restricted to user (by team?)
+- [ ] Elixir packages
+  - [ ] Namespaces (hex organization like)?
+- [ ] NPM packages?
+  - [ ] Namespaces (npm org scope like)?
+- [ ] Postgres database support (optional vs sqlite)
+- [ ] GCP bucket storage
+
+## Inspiration
+
+A lot of the initial code was taken from [Dashbit's Bytepack project](https://github.com/dashbitco/bytepack_archive), `mix phx.gen.auth`, and [Tailwind UI](https://tailwindui.com/). Check them out!
+
 ## License
 
 [MIT](LICENSE).
