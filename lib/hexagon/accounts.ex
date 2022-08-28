@@ -4,8 +4,8 @@ defmodule Hexagon.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias Hexagon.Repo
 
+  alias Hexagon.Repo
   alias Hexagon.Accounts.{User, UserToken, UserNotifier}
 
   ## Database getters
