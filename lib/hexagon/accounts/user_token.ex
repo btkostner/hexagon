@@ -16,7 +16,7 @@ defmodule Hexagon.Accounts.UserToken do
   @session_validity_in_days 60
 
   schema "users_tokens" do
-    field :token, :binary
+    field :token, :binary, redact: true
     field :context, :string
     field :sent_to, :string
     belongs_to :user, Hexagon.Accounts.User

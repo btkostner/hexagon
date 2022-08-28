@@ -1,13 +1,27 @@
 defmodule HexagonWeb.UserSettingsController do
   use HexagonWeb, :controller
 
-  alias Hexagon.Accounts
+  alias Hexagon.{Accounts, Authentication}
   alias HexagonWeb.UserAuth
 
-  plug :assign_email_and_password_changesets
+  plug :assign_data
 
   def edit(conn, _params) do
     render(conn, "edit.html")
+  end
+
+  def create(conn, %{"action" => "create_key"} = params) do
+    user = conn.assigns.current_user
+
+    case Authentication.create_key(user, params["key"]) do
+      {:ok, key, token} ->
+        conn
+        |> put_flash(:info, "Token created \"#{token}\"")
+        |> redirect(to: Routes.user_settings_path(conn, :edit))
+
+      {:error, changeset} ->
+        render(conn, "edit.html", key_changeset: changeset)
+    end
   end
 
   def update(conn, %{"action" => "update_email"} = params) do
@@ -64,11 +78,14 @@ defmodule HexagonWeb.UserSettingsController do
     end
   end
 
-  defp assign_email_and_password_changesets(conn, _opts) do
+  defp assign_data(conn, _opts) do
     user = conn.assigns.current_user
+    keys = Authentication.list_keys(user)
 
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
+    |> assign(:key_changeset, Authentication.change_key(nil))
+    |> assign(:keys, keys)
   end
 end
